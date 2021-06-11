@@ -41,31 +41,32 @@ class ArcSolver:
         self.radius = args[0]
         self.arc_length = args[1]
         self.samples = kwargs.get("samples", 150)
-        self.distance_units = kwargs.get("distance", "Nautical miles")
-        self.height_units = kwargs.get("height", "Feet")
+        self.distance_units = kwargs.get("distance", "NAUTICAL MILES")
+        self.height_units = kwargs.get("height", "FEET")
         self.radians = self.arc_length / self.radius
         self.chord_length = 2 * self.radius * np.sin(self.radians / 2)
         self.degrees = self.radians * 180 / np.pi
-        self.sagitta = self.radius - (np.sqrt((self.radius ** 2) - ((self.chord_length / 2) ** 2)))
-        self.arc_apothem = round(self.radius - self.sagitta, 8)
+        self.sagitta = float(self.radius - (np.sqrt((self.radius ** 2) - ((self.chord_length / 2) ** 2))))
+        self.arc_apothem = self.radius - self.sagitta
         self.circular_centre_x = self.chord_length / 2
         self.circular_centre_y = self.sagitta - self.radius
         self.diameter = self.radius * 2
         self.start_angle = np.arctan2(0 - self.circular_centre_y, 0 - self.circular_centre_x)
         self.end_angle = np.arctan2(0 - self.circular_centre_y, self.arc_length - self.circular_centre_x)
-        self.angles_list = np.linspace(self.start_angle, self.end_angle, self.samples)
-        self.x_coordinates = np.linspace(0, self.arc_length, self.samples)
-        self.y_coordinates = self.calculate_earth_surface_y_values()
+        self.angles_list = np.linspace(self.start_angle, self.end_angle, self.samples).tolist()
+        self.x_coordinates = np.linspace(0, self.arc_length, self.samples).tolist()
+        self.y_coordinates = self.calculate_earth_surface_y_values().tolist()
 
     # Returns a numpy array of y-axis values for mapping on matplotlib graph.  x values list is a list of distances
     # in nautical miles.  Each y-axis value represents the rising and falling of the earth to simulate 'curvature' which
     # effects line of sight visibility.
     def calculate_earth_surface_y_values(self) -> np.ndarray:
+        assert self.samples == len(self.x_coordinates)
         y_values_list = []
-        for j in range(len(self.x_coordinates())):
+        for j in self.angles_list:
             # Calculate the y axis value (height) for the corresponding x value (distance).  Subtract the apothem
             # of the circle to ensure the arc starts at coordinates 0,0 and ends at zero again on the y axis
-            y = self.radius * np.sin(self.calc_angles()[j]) - self.arc_apothem()
+            y = self.radius * np.sin(j) - self.arc_apothem
             y = round(convert_y_values(y, self.distance_units, self.height_units), 5)
             y_values_list.append(y)
         y_values_np = np.array(y_values_list)
