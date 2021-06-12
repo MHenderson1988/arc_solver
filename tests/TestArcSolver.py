@@ -1,9 +1,8 @@
 from unittest import TestCase
-
 from main.ArcSolver import ArcSolver
 
 
-class TestArcSolver(TestCase):
+class TestCircle(TestCase):
     def setUp(self) -> None:
         self.test = ArcSolver(1, 1, samples=3)
 
@@ -43,6 +42,9 @@ class TestArcSolver(TestCase):
         self.assertIsInstance(self.test.end_angle, float)
         self.assertEqual(1.0353981633974483, self.test.end_angle)
 
-    def test_y_coordinates(self):
-        for y in self.test.y_coordinates:
-            self.assertIsInstance(y, float)
+    def test_calculate_earth_surface_y_values(self):
+        c1 = ArcSolver(1, 1, samples=3)
+        expected_values = [0.0, 742.856702533, -106.43329711369864]
+        actual_values = c1.y_coordinates
+        for i in range(len(expected_values)):
+            self.assertAlmostEqual(expected_values[i], actual_values[i])
