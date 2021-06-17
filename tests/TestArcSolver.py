@@ -1,5 +1,6 @@
 from unittest import TestCase
-from main.ArcSolver import ArcSolver
+
+from main.arc_solver import ArcSolver
 
 
 class TestCircle(TestCase):
